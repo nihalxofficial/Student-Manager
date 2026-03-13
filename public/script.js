@@ -2,11 +2,17 @@ const newClassName = document.getElementById("newClassName")
 const addClassBtn = document.getElementById("addClassBtn")
 const classListContainer = document.getElementById("classListContainer")
 const classSelect = document.getElementById("studentClassId")
+const filterClass = document.getElementById("filterClass")
+const studentId = document.getElementById("studentId")
 const studentName = document.getElementById("studentName")
 const studentAge = document.getElementById("studentAge")
 const studentMarks = document.getElementById("studentMarks")
 const studentPresent = document.getElementById("studentPresent")
 const addStudentBtn = document.getElementById("addStudentBtn")
+const updateStudentBtn = document.getElementById("updateStudentBtn")
+const studentListContainer = document.getElementById("studentListContainer")
+let editingStudentId = null
+
 
 
 const api = "http://127.0.0.1:3000"
@@ -63,14 +69,15 @@ addClassBtn.addEventListener("click", ()=>{
 
 const loadNewClass = () =>{
     const newClassValue = newClassName.value;
-    const newClassId = classes.length
+    const newClassId = classes.length + 1
     const newClass = {
         id: newClassId,
         name: newClassValue
     }
     classes.push(newClass)
+    newClassName.value = "";
     displayClasses();
-    // console.log(classes);
+    valueSelect();
 }
 
 const displayClasses = () => {    
@@ -87,7 +94,7 @@ const displayClasses = () => {
         classListContainer.appendChild(classBadge)
     })
 }
-displayClasses();
+
 
 const deleteClass = (id) =>{
     let deletedClasses = classes.filter(el=> el.id != id)
@@ -100,14 +107,19 @@ const deleteClass = (id) =>{
 
 
 // Student Crud
-classSelect.innerHTML = '<option value="">— select class —</option>' + 
+const valueSelect = () => {
+    classSelect.innerHTML = '<option value="">— select class —</option>' + 
     classes.map(c => `<option value="${c.id}">${c.name}</option>`)
+    filterClass.innerHTML = '<option value="">— select class —</option>' + 
+    classes.map(c => `<option value="${c.id}">${c.name}</option>`)
+    // displayClasses()
+}
 
 addStudentBtn.addEventListener("click", ()=>{
     createStudent();
 })
 const createStudent = () => {
-    const id = students.length
+    const id = students.length + 1
     const name = studentName.value
     const age = parseInt(studentAge.value)
     const marks = parseInt(studentMarks.value)
@@ -121,6 +133,131 @@ const createStudent = () => {
         marks,
         present,
     }
-    students.push(student)    
+
+    students.push(student)
+    displayStudents()
+    studentName.value = ""
+    studentAge.value = ""
+    studentMarks.value = ""
+    studentPresent.value = ""
+    classSelect.value = ""
+}
+
+const displayStudents = () => {
+    studentListContainer.innerHTML = "";
+    students.forEach(s => {
+        const list = document.createElement("div") 
+        list.innerHTML = `
+        <div class="student-card cursor-pointer" data-student-id="${s.id}">
+              <div class="flex items-center gap-3 w-3/12">
+                <span class="avatar-placeholder text-sm">${s.name.charAt(0)}</span>
+                <div>
+                  <div class="font-semibold text-white text-sm">${s.name}</div>
+                  <div class="flex text-xs text-blue-300/70 gap-2 mt-0.5">
+                    <span>ID ${s.id}</span>
+                    <span>●</span>
+                    <span>${s.age} y</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 w-5/12 justify-start">
+                <span class="class-badge">${getClassName(s.class_id)}</span>
+                <span class="mark-pill">📊 ${s.marks}%</span>
+                <span class="attendance-icon ${s.present > 20 ? 'bg-blue-900/40 text-blue-300 border border-blue-800' : 'bg-amber-900/30 text-amber-300'}">📅 ${s.present}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button class="action-btn edit-student" data-student-id="${s.id}">✎ edit</button>
+                <button class="action-btn delete-student" data-student-id="${s.id}">🗑️ delete</button>
+              </div>
+            </div>
+        `;
+        studentListContainer.appendChild(list)
+        
+    } )
+}
+
+function getClassName(classId){
+    const found = classes.find(c => c.id === classId)    
+    return found ? found.name : "—"
+}
+
+
+
+// DELETE
+studentListContainer.addEventListener("click",(event)=>{
+
+    if(event.target.closest(".delete-student")){
+        const btn = event.target.closest(".delete-student")
+        const id = parseInt(btn.dataset.studentId)
+
+        deleteStudent(id)
+    }
+
+})
+
+
+// EDIT
+studentListContainer.addEventListener("dblclick",(event)=>{
+
+    if(event.target.closest(".student-card")){
+        if(event.target.closest(".delete-student")) return
+
+        const card = event.target.closest(".student-card")
+        const id = parseInt(card.dataset.studentId)
+
+        updateStudent(id)
+    }
+})
+
+
+
+studentListContainer.addEventListener("dblclick", (event) => {
+    if (event.target.closest(".student-card")) {
+        if (event.target.closest(".delete-student")) return
+
+        const card = event.target.closest(".student-card")
+        const id = parseInt(card.dataset.studentId)
+
+        editingStudentId = id  // track which student
+        const student = students.find(s => s.id === id)
+        if (!student) return
+
+        studentName.value = student.name
+        studentAge.value = student.age
+        studentMarks.value = student.marks
+        studentPresent.value = student.present
+        classSelect.value = student.class_id
+    }
+})
+
+updateStudentBtn.addEventListener("click", () => {
+    if (editingStudentId === null) return
+
+    const student = students.find(s => s.id === editingStudentId)
+    if (!student) return
+
+    student.name = studentName.value
+    student.age = parseInt(studentAge.value)
+    student.marks = parseInt(studentMarks.value)
+    student.present = parseInt(studentPresent.value)
+    student.class_id = parseInt(classSelect.value)
+
+    displayStudents()
+
+    // Reset form
+    studentName.value = ""
+    studentAge.value = ""
+    studentMarks.value = ""
+    studentPresent.value = ""
+    classSelect.value = ""
+    editingStudentId = null
+})
+
+const deleteStudent = (id) => {
+    console.log("Delete clicked",id);
     
 }
+
+valueSelect();
+displayStudents();
+displayClasses();

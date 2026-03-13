@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>blueblack · student crud (with table label bar)</title>
+  <title>Student Manager App</title>
   <!-- Tailwind + daisyUI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; background: #0b1120; }
     .stats-bg-blue { background: linear-gradient(145deg, #111827 0%, #1e2a47 100%); }
@@ -196,12 +197,12 @@
             <!-- Name -->
             <div class="flex items-center gap-2">
               <span class="text-blue-300 text-sm w-16">Name</span>
-              <input type="text" id="studentName" placeholder="e.g. Olivia Chen" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+              <input type="text" id="studentName" placeholder="" value="John Doe" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
             </div>
             <!-- Age -->
             <div class="flex items-center gap-2">
               <span class="text-blue-300 text-sm w-16">Age</span>
-              <input type="number" id="studentAge" value="16" min="1" max="99" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+              <input type="number" id="studentAge" value="20" min="1" max="99" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
             </div>
             <!-- Class selection (dynamic) -->
             <div class="flex items-center gap-2">
@@ -224,7 +225,7 @@
             <!-- CRUD action buttons (add, edit, delete, clear) -->
             <div class="flex flex-wrap gap-2 pt-3">
               <button id="addStudentBtn" class="bg-blue-700 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg> add</button>
-              <button id="editStudentBtn" class="bg-indigo-900/70 hover:bg-indigo-800 text-indigo-100 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> edit</button>
+              <button id="updateStudentBtn" class="bg-indigo-900/70 hover:bg-indigo-800 text-indigo-100 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> update</button>
               <button id="deleteStudentBtn" class="bg-rose-950/70 hover:bg-rose-900 text-rose-200 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> delete</button>
               <button id="clearFormBtn" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg">clear</button>
             </div>
@@ -274,7 +275,7 @@
           <!-- STUDENT CARD LIST (each card shows ID, Name, Age, Class, Marks, Present) -->
           <div id="studentListContainer" class="space-y-2 max-h-[600px] overflow-y-auto pr-1 thin-scroll">
             <!-- cards will be injected by JS with all properties -->
-            <div class="text-center text-blue-300/50 py-8">loading students ...</div>
+            <div class="text-center text-blue-300/50 py-8">Loading students ...</div>
           </div>
 
           <!-- hint -->
