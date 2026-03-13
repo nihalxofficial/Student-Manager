@@ -45,5 +45,21 @@ func main(){
 	app.Use(cors.New())
 	app.Use("/", static.New("./public"))
 
+	// Class Crud
+	app.Post("/ccreate", func(c fiber.Ctx) error {
+
+		var class Class
+
+		if err := c.Bind().Body(&class); err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": "Cannot parse JSON",
+			})
+		}
+
+		db.Create(&class)
+
+		return c.JSON(class)
+	})
+
 	app.Listen(":3000")
 }
