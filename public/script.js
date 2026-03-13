@@ -11,6 +11,7 @@ const studentPresent = document.getElementById("studentPresent")
 const addStudentBtn = document.getElementById("addStudentBtn")
 const updateStudentBtn = document.getElementById("updateStudentBtn")
 const studentListContainer = document.getElementById("studentListContainer")
+const deleteStudentBtn = document.getElementById("deleteStudentBtn")
 let editingStudentId = null
 
 
@@ -182,34 +183,7 @@ function getClassName(classId){
 }
 
 
-
-// DELETE
-studentListContainer.addEventListener("click",(event)=>{
-
-    if(event.target.closest(".delete-student")){
-        const btn = event.target.closest(".delete-student")
-        const id = parseInt(btn.dataset.studentId)
-
-        deleteStudent(id)
-    }
-
-})
-
-
 // EDIT
-studentListContainer.addEventListener("dblclick",(event)=>{
-
-    if(event.target.closest(".student-card")){
-        if(event.target.closest(".delete-student")) return
-
-        const card = event.target.closest(".student-card")
-        const id = parseInt(card.dataset.studentId)
-
-        updateStudent(id)
-    }
-})
-
-
 
 studentListContainer.addEventListener("dblclick", (event) => {
     if (event.target.closest(".student-card")) {
@@ -253,10 +227,47 @@ updateStudentBtn.addEventListener("click", () => {
     editingStudentId = null
 })
 
+
+// DELETE
+studentListContainer.addEventListener("click",(event)=>{
+
+    if(event.target.closest(".delete-student")){
+        const btn = event.target.closest(".delete-student")
+        const id = parseInt(btn.dataset.studentId)
+
+        deleteStudent(id)
+    }
+
+})
+
 const deleteStudent = (id) => {
-    console.log("Delete clicked",id);
+    let newArr = students.filter(el=> el.id !==id)
+    students = newArr
+    displayStudents()
     
 }
+
+deleteStudentBtn.addEventListener("click", ()=>{
+    // if (editingStudentId === null) return
+    students.forEach(el=> {
+        if(el.id === editingStudentId){
+            let newArr = students.filter(el=> el.id !==editingStudentId)
+            students = newArr
+            displayStudents()
+
+            // Reset form
+            studentName.value = ""
+            studentAge.value = ""
+            studentMarks.value = ""
+            studentPresent.value = ""
+            classSelect.value = ""
+            editingStudentId = null
+        }
+        else{
+            return
+        }
+    })
+})
 
 valueSelect();
 displayStudents();
