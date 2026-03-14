@@ -17,7 +17,8 @@ const filterMarksMin = document.getElementById("filterMarksMin")
 const filterPresentMin = document.getElementById("filterPresentMin")
 const applyFilterBtn = document.getElementById("applyFilterBtn")
 
-const api = "http://127.0.0.1:3000"
+// const api = "http://127.0.0.1:3000"
+const api = "https://student-manager-s0ou.onrender.com"
 
 let statTotal = document.getElementById("statTotal")
 let statClasses = document.getElementById("statClasses")
