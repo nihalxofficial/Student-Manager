@@ -107,30 +107,35 @@ const displayClasses = async () => {
 }
 
 // ===============Delete Class===================
+// ===============Delete Class===================
 const deleteClass = async (classId) => {
     // get students
     const res = await fetch(api + "/students")
-    if (!res.ok) {
-        console.log("Failed to fetch students")
-        return
-    }
     
-    const students = await res.json()
-    
-    // Ensure students is an array before using .some()
-    if (Array.isArray(students)) {
-        // check if class has students
-        const hasStudents = students.some(s => s.class_id === classId)
-
-        if (hasStudents) {
-            const ok = confirm("This class has students. Delete them all?")
-            if (!ok) return
-
-            // delete students of that class
-            await fetch(api + "/students/class/" + classId, {
-                method: "DELETE"
-            })
+    // Even if status is not ok, try to parse the response
+    let students = []
+    try {
+        students = await res.json()
+        // Ensure students is an array
+        if (!Array.isArray(students)) {
+            students = []
         }
+    } catch (e) {
+        console.log("Error parsing students response:", e)
+        students = []
+    }
+
+    // check if class has students
+    const hasStudents = students.some(s => s.class_id === classId)
+
+    if (hasStudents) {
+        const ok = confirm("This class has students. Delete them all?")
+        if (!ok) return
+
+        // delete students of that class
+        await fetch(api + "/students/class/" + classId, {
+            method: "DELETE"
+        })
     }
 
     // delete class

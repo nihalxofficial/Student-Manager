@@ -118,15 +118,18 @@ func main(){
 	})
 
 	// =================Read Students================
-	app.Get("/students",func(c fiber.Ctx)error{
-		var students []Student
-		result := db.Find(&students)
-		if result.Error != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": result.Error.Error(),
-		})}
-		return c.JSON(students)
-	})
+	// =================Read Students================
+app.Get("/students",func(c fiber.Ctx)error{
+    var students []Student
+    result := db.Find(&students)
+    if result.Error != nil {
+        return c.Status(500).JSON(fiber.Map{
+            "error": result.Error.Error(),
+        })
+    }
+    // Always return 200 with the students array (which could be empty)
+    return c.Status(200).JSON(students)
+})
 
 	// ================Read with filtered=================
 	app.Get("/students/filtered", func(c fiber.Ctx) error {
