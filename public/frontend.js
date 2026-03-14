@@ -20,7 +20,7 @@ const applyFilterBtn = document.getElementById("applyFilterBtn")
 const api = "http://127.0.0.1:3000"
 
 let editingStudentId = null
-let students = []
+// let students = []
 let classes = []
 
 
@@ -238,9 +238,13 @@ const createStudent = async () => {
 const displayStudents = async () => {
     const res = await fetch(api + "/students")
     const students = await res.json()
+    console.log(students);
+    
 
     studentListContainer.innerHTML = "";
     students.forEach(s => {
+        console.log(s);
+        
         const list = document.createElement("div") 
         list.innerHTML = `
         <div class="student-card cursor-pointer" data-student-id="${s.id}">
@@ -289,22 +293,64 @@ const deleteStudent = async(id) => {
     displayStudents()
 }
 
+// ================Filter Students=================
+const filterStudents = async () => {
 
-const filterStudents = () => {
-    const name = filterName.value;
-    const classId = filterClass.value;    
-    const marks = filterMarksMin.value;
-    const present = filterPresentMin.value;
+    let url = api + "/students?"
 
-    const result = students.filter(student => {
+    const name = filterName.value
+    const classId = filterClass.value
+    const marks = filterMarksMin.value
+    const present = filterPresentMin.value
 
-    return (!name || student.name.toLowerCase().includes(name.toLowerCase()))
-        && (!classId || student.class_id === parseInt(classId))
-        && (!marks || student.marks >= marks)
-        && (!present || student.present >= present)
+    if(name){
+        url += "name=" + name + "&"
+    }
 
-    })
-    displayStudents(result)
+    if(classId){
+        url += "class_id=" + classId + "&"
+    }
+
+    if(marks){
+        url += "marks=" + marks + "&"
+    }
+
+    if(present){
+        url += "present=" + present + "&"
+    }
+
+    const res = await fetch(url)
+    const students = await res.json()
+    studentListContainer.innerHTML = "";
+    students.forEach(s => {
+        const list = document.createElement("div") 
+        list.innerHTML = `
+        <div class="student-card cursor-pointer" data-student-id="${s.id}">
+              <div class="flex items-center gap-3 w-3/12">
+                <span class="avatar-placeholder text-sm">${s.name.charAt(0)}</span>
+                <div>
+                  <div class="font-semibold text-white text-sm">${s.name}</div>
+                  <div class="flex text-xs text-blue-300/70 gap-2 mt-0.5">
+                    <span>ID ${s.id}</span>
+                    <span>●</span>
+                    <span>${s.age} y</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 w-5/12 justify-start">
+                <span class="class-badge">${getClassName(s.class_id)}</span>
+                <span class="mark-pill">📊 ${s.marks}%</span>
+                <span class="attendance-icon ${s.present > 20 ? 'bg-blue-900/40 text-blue-300 border border-blue-800' : 'bg-amber-900/30 text-amber-300'}">📅 ${s.present}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button class="action-btn edit-student" data-student-id="${s.id}">✎ edit</button>
+                <button class="action-btn delete-student" data-student-id="${s.id}">🗑️ delete</button>
+              </div>
+            </div>
+        `;
+        studentListContainer.appendChild(list)
+        
+    } )
 }
 
 applyFilterBtn.addEventListener("click", filterStudents)

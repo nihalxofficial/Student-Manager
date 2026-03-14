@@ -177,9 +177,40 @@ func main(){
 				"Error" : "Data Not found",
 			})
 		}
-
 		// db.Save(student)
 		return c.SendString("Student Deleted")
+	})
+
+	// ================Filter Students===============
+	app.Get("/students?", func(c fiber.Ctx) error {
+
+	name := c.Query("name")
+	classID := c.Query("class_id")
+	marks := c.Query("marks")
+	present := c.Query("present")
+
+	query := db.Model(&Student{})
+
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	if classID != "" {
+		query = query.Where("class_id = ?", classID)
+	}
+
+	if marks != "" {
+		query = query.Where("marks >= ?", marks)
+	}
+
+	if present != "" {
+		query = query.Where("present >= ?", present)
+	}
+
+	var students []Student
+	query.Find(&students)
+
+	return c.JSON(students)
 	})
 	
 	app.Listen(":3000")
