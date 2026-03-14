@@ -84,9 +84,20 @@ func main(){
 		if err != nil {
 			return c.Status(400).JSON(fiber.Map{
 				"error": "Invalid ID format",
-			})}
-		var deleteClass Class
-		db.Delete(&deleteClass,id)
+			})
+		}
+		
+		// First check if class exists
+		var class Class
+		result := db.First(&class, id)
+		if result.Error != nil {
+			return c.Status(404).JSON(fiber.Map{
+				"error": "Class not found",
+			})
+		}
+		
+		// Delete the class
+		db.Delete(&Class{}, id)
 		return c.SendString("Deleted")
 	})
 
@@ -114,9 +125,6 @@ func main(){
 		return c.Status(500).JSON(fiber.Map{
 			"error": result.Error.Error(),
 		})}
-		if result.RowsAffected == 0 {
-			return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
-		}
 		return c.JSON(students)
 	})
 

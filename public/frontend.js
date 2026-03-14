@@ -91,7 +91,7 @@ const displayClasses = async () => {
     return
     }
     const data = await res.json()
-    classes = data
+    classes = Array.isArray(data) ? data : []
     classes.forEach(el=>{
         const classBadge = document.createElement("span")
         classBadge.innerHTML = `
@@ -108,23 +108,29 @@ const displayClasses = async () => {
 
 // ===============Delete Class===================
 const deleteClass = async (classId) => {
-
     // get students
     const res = await fetch(api + "/students")
+    if (!res.ok) {
+        console.log("Failed to fetch students")
+        return
+    }
+    
     const students = await res.json()
+    
+    // Ensure students is an array before using .some()
+    if (Array.isArray(students)) {
+        // check if class has students
+        const hasStudents = students.some(s => s.class_id === classId)
 
-    // check if class has students
-    const hasStudents = students.some(s => s.class_id === classId)
+        if (hasStudents) {
+            const ok = confirm("This class has students. Delete them all?")
+            if (!ok) return
 
-    if (hasStudents) {
-        const ok = confirm("This class has students. Delete them all?")
-
-        if (!ok) return
-
-        // delete students of that class
-        await fetch(api + "/students/class/" + classId, {
-            method: "DELETE"
-        })
+            // delete students of that class
+            await fetch(api + "/students/class/" + classId, {
+                method: "DELETE"
+            })
+        }
     }
 
     // delete class
@@ -274,7 +280,11 @@ const createStudent = async () => {
 
 const displayStudents = async () => {
     const res = await fetch(api + "/students")
-    const students = await res.json()    
+    const students = await res.json()   
+     if (!Array.isArray(students)) {
+        console.error("Expected array but got:", students)
+        return
+    } 
 
     studentListContainer.innerHTML = "";
     students.forEach(s => {
