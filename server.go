@@ -29,9 +29,6 @@ type Class struct {
 	Name string `json:"name"`
 }
 
-
-// var db *gorm.DB
-
 func main(){
 	dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -108,21 +105,21 @@ func main(){
 	})
 
 	// =================Read Students================
-	// app.Get("/students",func(c fiber.Ctx)error{
-	// 	var students []Student
-	// 	result := db.Find(&students)
-	// 	if result.Error != nil {
-	// 	return c.Status(500).JSON(fiber.Map{
-	// 		"error": result.Error.Error(),
-	// 	})}
-	// 	if result.RowsAffected == 0 {
-	// 		return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
-	// 	}
-	// 	return c.JSON(students)
-	// })
+	app.Get("/students",func(c fiber.Ctx)error{
+		var students []Student
+		result := db.Find(&students)
+		if result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": result.Error.Error(),
+		})}
+		if result.RowsAffected == 0 {
+			return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
+		}
+		return c.JSON(students)
+	})
 
 	// ================Read with filtered=================
-	app.Get("/students", func(c fiber.Ctx) error {
+	app.Get("/students/filtered", func(c fiber.Ctx) error {
 
 	name := c.Query("name")
 	classID := c.Query("class_id")
@@ -212,6 +209,7 @@ func main(){
 		return c.SendString("Student Deleted")
 	})
 
+	// =============Delete Student with ClassId===============
 	app.Delete("/students/class/:id", func(c fiber.Ctx) error {
 
 		classId := c.Params("id")
@@ -223,8 +221,30 @@ func main(){
 		})
 	})
 
-	// ================Filter Students===============
-	
-	
+
+	// ====================Stats Part=======================
+
+
+	app.Get("/stats", func(c fiber.Ctx) error {
+    var totalStudents int64
+    var totalClasses int64
+    var avgMarks float64
+    var avgPresent float64
+    var totalPresent int64
+
+    db.Model(&Student{}).Count(&totalStudents)
+    db.Model(&Class{}).Count(&totalClasses)
+    db.Model(&Student{}).Select("AVG(marks)").Scan(&avgMarks)
+    db.Model(&Student{}).Select("AVG(present)").Scan(&avgPresent)
+    db.Model(&Student{}).Select("SUM(present)").Scan(&totalPresent)
+
+    return c.JSON(fiber.Map{
+        "total_students": totalStudents,
+        "total_classes": totalClasses,
+        "avg_marks": avgMarks,
+        "avg_present": avgPresent,
+        "total_present": totalPresent,
+    })
+	})
 	app.Listen(":3000")
 }

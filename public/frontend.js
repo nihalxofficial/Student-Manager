@@ -19,10 +19,26 @@ const applyFilterBtn = document.getElementById("applyFilterBtn")
 
 const api = "http://127.0.0.1:3000"
 
+let statTotal = document.getElementById("statTotal")
+let statClasses = document.getElementById("statClasses")
+let statAvgMarks = document.getElementById("statAvgMarks")
+let statPresentAvg = document.getElementById("statPresentAvg")
+let statTotalPresent = document.getElementById("statTotalPresent")
 let editingStudentId = null
-// let students = []
 let classes = []
 
+
+const showStats = async () => {
+    const res = await fetch(api+"/stats")
+    const stats = await res.json()
+    // console.log(stats);
+    statTotal.innerText = stats.total_students
+    statClasses.innerText = stats.total_classes
+    statAvgMarks.innerText = stats.avg_marks.toFixed(2)
+    statPresentAvg.innerText = stats.avg_present.toFixed(2)
+    statTotalPresent.innerText = stats.total_present
+    
+}
 
 
 // Class Crud================================
@@ -62,6 +78,7 @@ const loadNewClass = async () =>{
     newClassName.value = "";
     await displayClasses();
     valueSelect();
+    showStats();
 }
 
 // ===============Read Classes==================
@@ -84,8 +101,8 @@ const displayClasses = async () => {
         `
         classListContainer.appendChild(classBadge)
     })
-    // displayStudents();
-    valueSelect()
+    valueSelect();
+    showStats();
 }
 
 // ===============Delete Class===================
@@ -289,6 +306,7 @@ const displayStudents = async () => {
         studentListContainer.appendChild(list)
         
     } )
+    showStats();
 }
 
 function getClassName(classId){
@@ -298,8 +316,6 @@ function getClassName(classId){
 
 
 // ======================Delete Student=====================
-
-
 
 const deleteStudent = async(id) => {    
     const res = await fetch(api+"/students/"+id,{
@@ -312,7 +328,7 @@ const deleteStudent = async(id) => {
 // ================Filter Students=================
 
 const filterStudents = async () => {    
-    let url = api + "/students?"
+    let url = api + "/students/filtered?"
 
     const name = filterName.value
     const classId = filterClass.value
@@ -372,6 +388,7 @@ const filterStudents = async () => {
 applyFilterBtn.addEventListener("click", filterStudents)
 
 valueSelect();
+showStats();
 
 const init = async () => {
     await displayClasses();   // load classes first
