@@ -24,6 +24,9 @@ let students = []
 let classes = []
 
 
+
+// Class Crud================================
+// ===============Create class===============
 newClassName.addEventListener("keyup", (event)=>{
     if(event.key==="Enter"){
         loadNewClass();
@@ -37,11 +40,10 @@ addClassBtn.addEventListener("click", ()=>{
 })
 
 
-// =============Create class=============
+// ==================Create class===============
 const loadNewClass = async () =>{
 
     const newClassValue = newClassName.value;
-    // const newClassId = classes.length + 1
 
     const res = await fetch(api + "/classes",{
         method: "POST",
@@ -49,7 +51,6 @@ const loadNewClass = async () =>{
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            // id: newClassId,
             name: newClassValue
         })
     });
@@ -58,11 +59,7 @@ const loadNewClass = async () =>{
     console.log("Request failed")
     return
     }
-
-    // const data = await res.json();
-
     newClassName.value = "";
-
     await displayClasses();
     valueSelect();
 }
@@ -77,7 +74,6 @@ const displayClasses = async () => {
     }
     const data = await res.json()
     classes = data
-    // console.log(classes);
     classes.forEach(el=>{
         const classBadge = document.createElement("span")
         classBadge.innerHTML = `
@@ -88,9 +84,11 @@ const displayClasses = async () => {
         `
         classListContainer.appendChild(classBadge)
     })
+    // displayStudents();
+    valueSelect()
 }
 
-
+// ===============Delete Class===================
 const deleteClass = async (id) =>{
     const res = await fetch(api + "/classes/" +id,{
         method: "DELETE",
@@ -98,55 +96,159 @@ const deleteClass = async (id) =>{
             "Content-Type": "application/json"
         }
     })
-    // const data = await res.text();
-    // console.log(data);
     await displayClasses()    
 }
 
-
-
-
-
-// Student Crud
 const valueSelect = () => {
     classSelect.innerHTML = '<option value="">— select class —</option>' + 
     classes.map(c => `<option value="${c.id}">${c.name}</option>`)
     filterClass.innerHTML = '<option value="">— select class —</option>' + 
     classes.map(c => `<option value="${c.id}">${c.name}</option>`)
-    // displayClasses()
 }
+
+
+// Student Crud======================================
+
+studentListContainer.addEventListener("dblclick", async (event) => {
+    if (event.target.closest(".student-card")) {
+        if (event.target.closest(".delete-student")) return        
+
+        const card = event.target.closest(".student-card")
+        const id = parseInt(card.dataset.studentId)
+
+        editingStudentId = id
+        const res = await fetch(api + "/students/"+id)
+        const student =  await res.json()
+        
+        if (!student) return
+
+        studentName.value = student.name
+        studentAge.value = student.age
+        studentMarks.value = student.marks
+        studentPresent.value = student.present
+        classSelect.value = student.class_id
+    }
+})
+
+studentListContainer.addEventListener("click",(event)=>{
+
+    if(event.target.closest(".delete-student")){        
+        const btn = event.target.closest(".delete-student")
+        const id = parseInt(btn.dataset.studentId)
+        console.log("from event function");
+        
+        deleteStudent(id)
+    }
+
+})
 
 addStudentBtn.addEventListener("click", ()=>{
     createStudent();
 })
-const createStudent = () => {
-    const id = students.length + 1
+
+// ===================Update Student==============
+updateStudentBtn.addEventListener("click", async () => {
+    if (editingStudentId === null) return
     const name = studentName.value
     const age = parseInt(studentAge.value)
     const marks = parseInt(studentMarks.value)
     const present = parseInt(studentPresent.value)
-    const class_id = parseInt(classSelect.value)    
-    const student = {
-        id,
-        name,
-        age,
-        class_id,
-        marks,
-        present,
-    }
+    const class_id = parseInt(classSelect.value)
 
-    students.push(student)
-    displayStudents(students)
+    const response = await fetch(api + "/students/"+ editingStudentId,{
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name,
+            marks,
+            age,
+            present,
+            class_id,
+        })
+    })
+    const data = await response.json()
+    console.log(data);
+    
+    displayStudents()
+
+    // Reset form
     studentName.value = ""
     studentAge.value = ""
     studentMarks.value = ""
     studentPresent.value = ""
     classSelect.value = ""
+    editingStudentId = null
+})
+
+
+deleteStudentBtn.addEventListener("click", ()=>{
+    // if (editingStudentId === null) return
+    students.forEach(el=> {
+        if(el.id === editingStudentId){
+            let newArr = students.filter(el=> el.id !==editingStudentId)
+            students = newArr
+            displayStudents(students)
+
+            // Reset form
+            studentName.value = ""
+            studentAge.value = ""
+            studentMarks.value = ""
+            studentPresent.value = ""
+            classSelect.value = ""
+            editingStudentId = null
+        }
+        else{
+            return
+        }
+    })
+})
+
+
+// ==================Create Student======================
+
+const createStudent = async () => {
+    const name = studentName.value
+    const age = parseInt(studentAge.value)
+    const marks = parseInt(studentMarks.value)
+    const present = parseInt(studentPresent.value)
+    const class_id = parseInt(classSelect.value)    
+
+    const res = await fetch(api+"/students",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            age: age,
+            marks: marks,
+            present: present,
+            class_id: class_id
+        })
+    })
+    // const newStudent = await res.json();
+    // students.push(newStudent);
+    displayStudents()
+    
+
+    studentName.value = "";
+    studentAge.value = "";
+    studentMarks.value = "";
+    studentPresent.value = "";
+    classSelect.value = "";
 }
 
-const displayStudents = (arr) => {
+
+// ======================Read Student=====================
+
+const displayStudents = async () => {
+    const res = await fetch(api + "/students")
+    const students = await res.json()
+
     studentListContainer.innerHTML = "";
-    arr.forEach(s => {
+    students.forEach(s => {
         const list = document.createElement("div") 
         list.innerHTML = `
         <div class="student-card cursor-pointer" data-student-id="${s.id}">
@@ -183,92 +285,21 @@ function getClassName(classId){
 }
 
 
-// EDIT
-
-studentListContainer.addEventListener("dblclick", (event) => {
-    if (event.target.closest(".student-card")) {
-        if (event.target.closest(".delete-student")) return
-
-        const card = event.target.closest(".student-card")
-        const id = parseInt(card.dataset.studentId)
-
-        editingStudentId = id  // track which student
-        const student = students.find(s => s.id === id)
-        if (!student) return
-
-        studentName.value = student.name
-        studentAge.value = student.age
-        studentMarks.value = student.marks
-        studentPresent.value = student.present
-        classSelect.value = student.class_id
-    }
-})
-
-updateStudentBtn.addEventListener("click", () => {
-    if (editingStudentId === null) return
-
-    const student = students.find(s => s.id === editingStudentId)
-    if (!student) return
-
-    student.name = studentName.value
-    student.age = parseInt(studentAge.value)
-    student.marks = parseInt(studentMarks.value)
-    student.present = parseInt(studentPresent.value)
-    student.class_id = parseInt(classSelect.value)
-
-    displayStudents(students)
-
-    // Reset form
-    studentName.value = ""
-    studentAge.value = ""
-    studentMarks.value = ""
-    studentPresent.value = ""
-    classSelect.value = ""
-    editingStudentId = null
-})
+// ======================Delete Student=====================
 
 
-// DELETE
-studentListContainer.addEventListener("click",(event)=>{
 
-    if(event.target.closest(".delete-student")){
-        const btn = event.target.closest(".delete-student")
-        const id = parseInt(btn.dataset.studentId)
-
-        deleteStudent(id)
-    }
-
-})
-
-const deleteStudent = (id) => {
-    let newArr = students.filter(el=> el.id !==id)
-    students = newArr
-    displayStudents(students)
+const deleteStudent = async(id) => {
+    console.log("from delete function");
     
-}
 
-deleteStudentBtn.addEventListener("click", ()=>{
-    // if (editingStudentId === null) return
-    students.forEach(el=> {
-        if(el.id === editingStudentId){
-            let newArr = students.filter(el=> el.id !==editingStudentId)
-            students = newArr
-            displayStudents(students)
-
-            // Reset form
-            studentName.value = ""
-            studentAge.value = ""
-            studentMarks.value = ""
-            studentPresent.value = ""
-            classSelect.value = ""
-            editingStudentId = null
-        }
-        else{
-            return
-        }
+    const res = await fetch(api+"/students/"+id,{
+        method: "DELETE"
     })
-})
-
+    const data = await res.text()
+    // console.log(data);
+    displayStudents()
+}
 
 
 const filterStudents = () => {
@@ -291,5 +322,10 @@ const filterStudents = () => {
 applyFilterBtn.addEventListener("click", filterStudents)
 
 valueSelect();
-displayStudents(students);
-displayClasses();
+
+const init = async () => {
+    await displayClasses();   // load classes first
+    await displayStudents();  // then load students
+}
+
+init();

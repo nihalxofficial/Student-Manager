@@ -47,12 +47,6 @@ func main(){
 	app.Use(cors.New())
 	app.Use("/", static.New("./public"))
 
-	// Student Routes
-	// app.Get("/students",getStudents)
-	// app.Post("/students", createStudendt)
-	// app.Put("/students/:id",updateStudent)
-	// app.Delete("/students/:id",deleteStudent)
-
 	// Class Roues
 	// ====================Read Classes=======================
 	app.Get("/classes", func(c fiber.Ctx) error {
@@ -87,10 +81,105 @@ func main(){
 
 	// ===================Delete Class====================
 	app.Delete("/classes/:id", func(c fiber.Ctx)error{
-		id, _ := strconv.Atoi(c.Params("id"))
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": "Invalid ID format",
+			})}
 		var deleteClass Class
 		db.Delete(&deleteClass,id)
 		return c.SendString("Deleted")
+	})
+
+
+	// Student Routes
+
+	// =================Create Student=================
+	
+	app.Post("/students", func(c fiber.Ctx)error{
+		var newStudent Student
+		if err:= c.Bind().Body(&newStudent); err != nil{
+			return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid input",
+
+		})}
+		db.Create(&newStudent)
+		return c.JSON(newStudent)
+	})
+
+	// =================Read Students================
+	app.Get("/students",func(c fiber.Ctx)error{
+		var students []Student
+		result := db.Find(&students)
+		if result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": result.Error.Error(),
+		})}
+		if result.RowsAffected == 0 {
+			return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
+		}
+		return c.JSON(students)
+	})
+
+	// ===================Get Single Student=============
+	app.Get("/students/:id", func(c fiber.Ctx)error{
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": "Invalid ID format",
+			})}
+		var student Student
+		db.First(&student, id)
+		return c.JSON(student)
+	})
+
+	// ===================Update Student==================
+	app.Put("/students/:id",func(c fiber.Ctx)error{
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": "Invalid ID format",
+			})}
+		var student Student
+		result := db.First(&student, id)
+		if result.Error != nil{
+			return c.Status(404).JSON(fiber.Map{
+				"Error" : "Data Not found",
+			})
+		}
+		var updatedStudent Student
+		if err := c.Bind().Body(&updatedStudent) ; err != nil{
+			return c.Status(400).JSON(fiber.Map{
+				"Error" : "Invalid Input",
+			})}
+		student.Name = updatedStudent.Name
+		student.Age = updatedStudent.Age
+		student.Marks = updatedStudent.Marks
+		student.ClassID = updatedStudent.ClassID
+		student.Present = updatedStudent.Present
+
+		db.Save(&student)
+
+		return c.JSON(student)
+	})
+
+	// =================Delete Student================
+	app.Delete("/students/:id",func(c fiber.Ctx)error{
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{
+				"error": "Invalid ID format",
+			})}
+		var student Student
+		result := db.Delete(&student, id)
+		if result.Error != nil{
+			return c.Status(404).JSON(fiber.Map{
+				"Error" : "Data Not found",
+			})
+		}
+
+		// db.Save(student)
+		return c.SendString("Student Deleted")
 	})
 	
 	app.Listen(":3000")
