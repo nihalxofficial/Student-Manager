@@ -1,6 +1,6 @@
+const classListContainer = document.getElementById("classListContainer")
 const newClassName = document.getElementById("newClassName")
 const addClassBtn = document.getElementById("addClassBtn")
-const classListContainer = document.getElementById("classListContainer")
 const classSelect = document.getElementById("studentClassId")
 const filterClass = document.getElementById("filterClass")
 const studentId = document.getElementById("studentId")
@@ -12,8 +12,12 @@ const addStudentBtn = document.getElementById("addStudentBtn")
 const updateStudentBtn = document.getElementById("updateStudentBtn")
 const studentListContainer = document.getElementById("studentListContainer")
 const deleteStudentBtn = document.getElementById("deleteStudentBtn")
-let editingStudentId = null
+const filterName = document.getElementById("filterName")
+const filterMarksMin = document.getElementById("filterMarksMin")
+const filterPresentMin = document.getElementById("filterPresentMin")
+const applyFilterBtn = document.getElementById("applyFilterBtn")
 
+let editingStudentId = null
 
 
 const api = "http://127.0.0.1:3000"
@@ -136,7 +140,7 @@ const createStudent = () => {
     }
 
     students.push(student)
-    displayStudents()
+    displayStudents(students)
     studentName.value = ""
     studentAge.value = ""
     studentMarks.value = ""
@@ -144,9 +148,9 @@ const createStudent = () => {
     classSelect.value = ""
 }
 
-const displayStudents = () => {
+const displayStudents = (arr) => {
     studentListContainer.innerHTML = "";
-    students.forEach(s => {
+    arr.forEach(s => {
         const list = document.createElement("div") 
         list.innerHTML = `
         <div class="student-card cursor-pointer" data-student-id="${s.id}">
@@ -216,7 +220,7 @@ updateStudentBtn.addEventListener("click", () => {
     student.present = parseInt(studentPresent.value)
     student.class_id = parseInt(classSelect.value)
 
-    displayStudents()
+    displayStudents(students)
 
     // Reset form
     studentName.value = ""
@@ -243,7 +247,7 @@ studentListContainer.addEventListener("click",(event)=>{
 const deleteStudent = (id) => {
     let newArr = students.filter(el=> el.id !==id)
     students = newArr
-    displayStudents()
+    displayStudents(students)
     
 }
 
@@ -253,7 +257,7 @@ deleteStudentBtn.addEventListener("click", ()=>{
         if(el.id === editingStudentId){
             let newArr = students.filter(el=> el.id !==editingStudentId)
             students = newArr
-            displayStudents()
+            displayStudents(students)
 
             // Reset form
             studentName.value = ""
@@ -269,6 +273,27 @@ deleteStudentBtn.addEventListener("click", ()=>{
     })
 })
 
+
+
+const filterStudents = () => {
+    const name = filterName.value;
+    const classId = filterClass.value;    
+    const marks = filterMarksMin.value;
+    const present = filterPresentMin.value;
+
+    const result = students.filter(student => {
+
+    return (!name || student.name.toLowerCase().includes(name.toLowerCase()))
+        && (!classId || student.class_id === parseInt(classId))
+        && (!marks || student.marks >= marks)
+        && (!present || student.present >= present)
+
+    })
+    displayStudents(result)
+}
+
+applyFilterBtn.addEventListener("click", filterStudents)
+
 valueSelect();
-displayStudents();
+displayStudents(students);
 displayClasses();

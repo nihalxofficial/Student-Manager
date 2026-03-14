@@ -187,7 +187,7 @@
       <!-- LEFT: Add/Edit student form (matches properties) -->
       <div class="lg:col-span-1 space-y-6">
         <div class="bg-[#0f172b] rounded-2xl border border-blue-900/60 p-5 shadow-2xl">
-          <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><span class="w-1.5 h-5 bg-blue-500 rounded-full"></span>➕ student (ID, name, age, class, marks, present)</h2>
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><span class="w-1.5 h-5 bg-blue-500 rounded-full"></span>➕ Student CRUD Operations</h2>
           <div class="space-y-3">
             <!-- ID (hidden/display) -->
             <div class="flex items-center gap-2">
@@ -227,7 +227,7 @@
               <button id="addStudentBtn" class="bg-blue-700 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg> add</button>
               <button id="updateStudentBtn" class="bg-indigo-900/70 hover:bg-indigo-800 text-indigo-100 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> update</button>
               <button id="deleteStudentBtn" class="bg-rose-950/70 hover:bg-rose-900 text-rose-200 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> delete</button>
-              <button id="clearFormBtn" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg">clear</button>
+              <button id="clearFormBtn" type="reset" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg">clear</button>
             </div>
             <p class="text-xs text-blue-400/60 mt-1 italic">click on a student card to populate form</p>
           </div>
@@ -235,7 +235,7 @@
 
         <!-- CLASS management (add/delete) -->
         <div class="bg-[#0f172b] rounded-2xl border border-blue-900/60 p-5 shadow-2xl">
-          <h2 class="text-md font-semibold flex items-center gap-2 text-white mb-3"><span class="w-1.5 h-5 bg-blue-400 rounded-full"></span>📚 classes (add / delete)</h2>
+          <h2 class="text-md font-semibold flex items-center gap-2 text-white mb-3"><span class="w-1.5 h-5 bg-blue-400 rounded-full"></span>📚 Classes (Add / Delete)</h2>
           <div class="flex items-center gap-2 mb-3">
             <input type="text" id="newClassName" placeholder="e.g. 10-A" class="input-blueblack w-full rounded-lg px-3 py-2.5 text-sm" />
             <button id="addClassBtn" class="bg-blue-800/50 hover:bg-blue-700/70 text-blue-200 p-2.5 rounded-lg border border-blue-600/50"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
