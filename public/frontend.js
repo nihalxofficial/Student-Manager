@@ -183,26 +183,18 @@ updateStudentBtn.addEventListener("click", async () => {
 })
 
 
-deleteStudentBtn.addEventListener("click", ()=>{
-    // if (editingStudentId === null) return
-    students.forEach(el=> {
-        if(el.id === editingStudentId){
-            let newArr = students.filter(el=> el.id !==editingStudentId)
-            students = newArr
-            displayStudents(students)
-
-            // Reset form
-            studentName.value = ""
-            studentAge.value = ""
-            studentMarks.value = ""
-            studentPresent.value = ""
-            classSelect.value = ""
-            editingStudentId = null
-        }
-        else{
-            return
-        }
+deleteStudentBtn.addEventListener("click", async ()=>{
+    const res = await fetch(api+"/students/"+editingStudentId,{
+        method: "DELETE"
     })
+    const data = await res.text()
+    studentName.value = ""
+    studentAge.value = ""
+    studentMarks.value = ""
+    studentPresent.value = ""
+    classSelect.value = ""
+    editingStudentId = null
+    displayStudents()
 })
 
 
@@ -289,15 +281,11 @@ function getClassName(classId){
 
 
 
-const deleteStudent = async(id) => {
-    console.log("from delete function");
-    
-
+const deleteStudent = async(id) => {    
     const res = await fetch(api+"/students/"+id,{
         method: "DELETE"
     })
     const data = await res.text()
-    // console.log(data);
     displayStudents()
 }
 
