@@ -108,17 +108,49 @@ func main(){
 	})
 
 	// =================Read Students================
-	app.Get("/students",func(c fiber.Ctx)error{
-		var students []Student
-		result := db.Find(&students)
-		if result.Error != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": result.Error.Error(),
-		})}
-		if result.RowsAffected == 0 {
-			return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
-		}
-		return c.JSON(students)
+	// app.Get("/students",func(c fiber.Ctx)error{
+	// 	var students []Student
+	// 	result := db.Find(&students)
+	// 	if result.Error != nil {
+	// 	return c.Status(500).JSON(fiber.Map{
+	// 		"error": result.Error.Error(),
+	// 	})}
+	// 	if result.RowsAffected == 0 {
+	// 		return c.Status(404).JSON(fiber.Map{"error": "Record not found"})
+	// 	}
+	// 	return c.JSON(students)
+	// })
+
+	// ================Read with filtered=================
+	app.Get("/students", func(c fiber.Ctx) error {
+
+	name := c.Query("name")
+	classID := c.Query("class_id")
+	marks := c.Query("marks")
+	present := c.Query("present")
+
+	query := db.Model(&Student{})
+
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	if classID != "" {
+		query = query.Where("class_id = ?", classID)
+	}
+
+	if marks != "" {
+		query = query.Where("marks >= ?", marks)
+	}
+
+	if present != "" {
+		query = query.Where("present >= ?", present)
+	}
+
+	var students []Student
+	query.Find(&students)
+
+	return c.JSON(students)
 	})
 
 	// ===================Get Single Student=============
@@ -177,41 +209,22 @@ func main(){
 				"Error" : "Data Not found",
 			})
 		}
-		// db.Save(student)
 		return c.SendString("Student Deleted")
 	})
 
-	// ================Filter Students===============
-	app.Get("/students?", func(c fiber.Ctx) error {
+	app.Delete("/students/class/:id", func(c fiber.Ctx) error {
 
-	name := c.Query("name")
-	classID := c.Query("class_id")
-	marks := c.Query("marks")
-	present := c.Query("present")
+		classId := c.Params("id")
 
-	query := db.Model(&Student{})
+		db.Where("class_id = ?", classId).Delete(&Student{})
 
-	if name != "" {
-		query = query.Where("name LIKE ?", "%"+name+"%")
-	}
-
-	if classID != "" {
-		query = query.Where("class_id = ?", classID)
-	}
-
-	if marks != "" {
-		query = query.Where("marks >= ?", marks)
-	}
-
-	if present != "" {
-		query = query.Where("present >= ?", present)
-	}
-
-	var students []Student
-	query.Find(&students)
-
-	return c.JSON(students)
+		return c.JSON(fiber.Map{
+			"message": "students deleted",
+		})
 	})
+
+	// ================Filter Students===============
+	
 	
 	app.Listen(":3000")
 }

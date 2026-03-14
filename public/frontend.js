@@ -89,14 +89,33 @@ const displayClasses = async () => {
 }
 
 // ===============Delete Class===================
-const deleteClass = async (id) =>{
-    const res = await fetch(api + "/classes/" +id,{
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json"
-        }
+const deleteClass = async (classId) => {
+
+    // get students
+    const res = await fetch(api + "/students")
+    const students = await res.json()
+
+    // check if class has students
+    const hasStudents = students.some(s => s.class_id === classId)
+
+    if (hasStudents) {
+        const ok = confirm("This class has students. Delete them all?")
+
+        if (!ok) return
+
+        // delete students of that class
+        await fetch(api + "/students/class/" + classId, {
+            method: "DELETE"
+        })
+    }
+
+    // delete class
+    await fetch(api + "/classes/" + classId, {
+        method: "DELETE"
     })
-    await displayClasses()    
+
+    displayClasses()
+    displayStudents()
 }
 
 const valueSelect = () => {
@@ -237,13 +256,10 @@ const createStudent = async () => {
 
 const displayStudents = async () => {
     const res = await fetch(api + "/students")
-    const students = await res.json()
-    console.log(students);
-    
+    const students = await res.json()    
 
     studentListContainer.innerHTML = "";
     students.forEach(s => {
-        console.log(s);
         
         const list = document.createElement("div") 
         list.innerHTML = `
@@ -294,8 +310,8 @@ const deleteStudent = async(id) => {
 }
 
 // ================Filter Students=================
-const filterStudents = async () => {
 
+const filterStudents = async () => {    
     let url = api + "/students?"
 
     const name = filterName.value
