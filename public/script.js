@@ -53,25 +53,6 @@ addClassBtn.addEventListener("click", ()=>{
     
 })
 
-// const loadNewClass = async () => {
-//     const newClass = newClassName.value; 
-//     console.log(newClass);
-//     const res = await fetch(api + "/ccreate",{
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json"
-//         },
-//         body: JSON.stringify({
-//             name: newClass
-//         })
-//     })
-//     const data = await res.json()
-//     console.log(data);
-    
-//     newClassName.value = "";
-    
-// }
-
 const loadNewClass = () =>{
     const newClassValue = newClassName.value;
     const newClassId = classes.length + 1
@@ -102,13 +83,23 @@ const displayClasses = () => {
 
 
 const deleteClass = (id) =>{
+    const hasStudents = students.some(s => s.class_id === id)
+    if(hasStudents){
+      const ok = confirm("This class has students. Do you want to delete them all?")
+      if(!ok){
+        return
+      }else{
+        let deletedStudents = students.filter(s => s.class_id !== id)
+        console.log(deletedStudents);
+        
+        students = deletedStudents
+        displayStudents(students)
+      }
+    }
     let deletedClasses = classes.filter(el=> el.id != id)
     classes = deletedClasses
     displayClasses()    
 }
-
-
-
 
 
 // Student Crud
