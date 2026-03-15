@@ -17,10 +17,15 @@ const filterMarksMin = document.getElementById("filterMarksMin")
 const filterPresentMin = document.getElementById("filterPresentMin")
 const applyFilterBtn = document.getElementById("applyFilterBtn")
 
+const api = "http://127.0.0.1:3000"
+
 let editingStudentId = null
 
-
-const api = "http://127.0.0.1:3000"
+let statTotal = document.getElementById("statTotal")
+let statClasses = document.getElementById("statClasses")
+let statAvgMarks = document.getElementById("statAvgMarks")
+let statPresentAvg = document.getElementById("statPresentAvg")
+let statTotalPresent = document.getElementById("statTotalPresent")
 
 let students = [
     { id: 101, name: 'Olivia Chen', age: 16, class_id: 1, marks: 94, present: 23 },
@@ -39,6 +44,22 @@ let classes = [
     { id: 5, name: '12-B' },
     ];
 
+const stats = () => {
+
+    let marks = 0
+    let present = 0
+    students.forEach(s=>{
+        marks += s.marks
+        present += s.present
+    })
+
+    statTotal.innerText = students.length 
+    statClasses.innerText = classes.length 
+    statAvgMarks.innerText = (marks/students.length).toFixed(2) 
+    statPresentAvg.innerText = (present/students.length).toFixed(2)
+    statTotalPresent.innerText = present
+    
+}
 
 
 newClassName.addEventListener("keyup", (event)=>{
@@ -79,6 +100,7 @@ const displayClasses = () => {
         `;
         classListContainer.appendChild(classBadge)
     })
+    stats();
 }
 
 
@@ -170,15 +192,13 @@ const displayStudents = (arr) => {
         studentListContainer.appendChild(list)
         
     } )
+    stats();
 }
 
 function getClassName(classId){
     const found = classes.find(c => c.id === classId)    
     return found ? found.name : "—"
 }
-
-
-// EDIT
 
 studentListContainer.addEventListener("dblclick", (event) => {
     if (event.target.closest(".student-card")) {
@@ -187,7 +207,7 @@ studentListContainer.addEventListener("dblclick", (event) => {
         const card = event.target.closest(".student-card")
         const id = parseInt(card.dataset.studentId)
 
-        editingStudentId = id  // track which student
+        editingStudentId = id  
         const student = students.find(s => s.id === id)
         if (!student) return
 
@@ -285,6 +305,7 @@ const filterStudents = () => {
 
 applyFilterBtn.addEventListener("click", filterStudents)
 
+stats();
 valueSelect();
 displayStudents(students);
 displayClasses();
