@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management App</title>
+  <!-- Tailwind + daisyUI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0b1120; }
+    .stats-bg-blue { background: linear-gradient(145deg, #111827 0%, #1e2a47 100%); }
+    .table-row-hover:hover { background-color: #1a2645 !important; transition: 0.15s; }
+    .badge-attend { background: #0f2a3f; color: #7ab7ef; border: 1px solid #2b4f73; }
+    .input-blueblack {
+      background-color: #0e1629;
+      border: 1px solid #2d3b5a;
+      color: #e0e7ff;
+    }
+    .input-blueblack:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.3);
+      outline: none;
+    }
+    /* student card redesign */
+    .student-card {
+      background: #0f1a2f;
+      border: 1px solid #253a5a;
+      border-radius: 1rem;
+      padding: 0.9rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      margin-bottom: 0.75rem;
+    }
+    .student-card:hover {
+      background: #162442;
+      border-color: #3b5f8e;
+      box-shadow: 0 10px 20px -8px #0f1f3f;
+    }
+    .avatar-placeholder {
+      background: #12315a;
+      width: 44px;
+      height: 44px;
+      border-radius: 40%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ac7ff;
+      font-weight: 600;
+      border: 1px solid #2d5f9e;
+    }
+    .class-badge {
+      background: #142b44;
+      border: 1px solid #2d5580;
+      color: #b0d4ff;
+      padding: 0.25rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .mark-pill {
+      background: #082032;
+      border-radius: 30px;
+      padding: 0.25rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #b7e0ff;
+      border: 1px solid #26527f;
+    }
+    .attendance-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .action-btn {
+      background: #1f304e;
+      border: 1px solid #344e7a;
+      color: #b3d9ff;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      transition: all 0.1s;
+      margin: 0 0.15rem;
+    }
+    .action-btn:hover {
+      background: #2f4b77;
+      color: white;
+      border-color: #4f7bb5;
+    }
+    .filter-select, .filter-input {
+      background-color: #0e1629;
+      border: 1px solid #2d3b5a;
+      border-radius: 2rem;
+      padding: 0.5rem 1.2rem;
+      color: #e0e7ff;
+      font-size: 0.9rem;
+    }
+    /* label bar styling */
+    .label-bar {
+      background: #10233e;
+      border: 1px solid #1f3d68;
+      border-radius: 1rem;
+      padding: 0.65rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #b3d9ff;
+      box-shadow: 0 2px 8px rgba(0,30,70,0.6);
+      margin-bottom: 1.25rem;
+    }
+    .label-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .label-badge {
+      background: #1b3455;
+      border-radius: 30px;
+      padding: 0.2rem 1rem;
+      color: #9ac7ff;
+      border: 1px solid #2f5090;
+      font-weight: 400;
+      text-transform: none;
+    }
+  </style>
+</head>
+<body class="p-6 text-slate-200 antialiased">
+
+  <div class="max-w-7xl mx-auto">
+
+    <!-- HEADER with blue/black gradient -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 shadow-lg shadow-blue-900/40">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-white"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-white">Stu<span class="text-blue-400">dent</span> · Manager</h1>
+          <p class="text-sm text-blue-300/70 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>ID · Name · Age · Class · Marks · Present</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-sm bg-blue-800/40 border border-blue-700/60 text-blue-200 hover:bg-blue-700/60">📊 reports</button>
+        <button class="btn btn-sm bg-indigo-900/50 border border-indigo-600 text-indigo-200 hover:bg-indigo-800/70">⚙️ settings</button>
+      </div>
+    </div>
+
+    <!-- STATS cards (dynamic later) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div class="stats-bg-blue rounded-2xl p-4 border border-blue-900/50 shadow-xl flex justify-between items-center">
+        <div><p class="text-xs text-blue-300/80">total students</p><p class="text-2xl font-bold text-white" id="statTotal">0</p></div>
+        <div class="p-2 bg-blue-700/30 rounded-full text-blue-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      </div>
+      <div class="stats-bg-blue rounded-2xl p-4 border border-blue-900/50 shadow-xl flex justify-between items-center">
+        <div><p class="text-xs text-blue-300/80">classes</p><p class="text-2xl font-bold text-white" id="statClasses">0</p></div>
+        <div class="p-2 bg-blue-700/30 rounded-full text-blue-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
+      </div>
+      <div class="stats-bg-blue rounded-2xl p-4 border border-blue-900/50 shadow-xl flex justify-between items-center">
+        <div><p class="text-xs text-blue-300/80">avg marks</p><p class="text-2xl font-bold text-white" id="statAvgMarks">—</p></div>
+        <div class="p-2 bg-blue-700/30 rounded-full text-blue-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      </div>
+      <div class="stats-bg-blue rounded-2xl p-4 border border-blue-900/50 shadow-xl flex justify-between items-center">
+        <div><p class="text-xs text-blue-300/80">present avg</p><p class="text-2xl font-bold text-white" id="statPresentAvg">—</p></div>
+        <div class="p-2 bg-blue-700/30 rounded-full text-blue-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M5.5 20v-2a6 6 0 0 1 12 0v2"/></svg></div>
+      </div>
+      <div class="stats-bg-blue rounded-2xl p-4 border border-blue-900/50 shadow-xl flex justify-between items-center">
+        <div><p class="text-xs text-blue-300/80">total present</p><p class="text-2xl font-bold text-white" id="statTotalPresent">0</p></div>
+        <div class="p-2 bg-blue-700/30 rounded-full text-blue-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      </div>
+    </div>
+
+    <!-- MAIN LAYOUT: LEFT FORM + RIGHT TABLE (cards) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
+      
+      <!-- LEFT: Add/Edit student form (matches properties) -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="bg-[#0f172b] rounded-2xl border border-blue-900/60 p-5 shadow-2xl">
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><span class="w-1.5 h-5 bg-blue-500 rounded-full"></span>➕ Student CRUD Operations</h2>
+          <div class="space-y-3">
+            <!-- ID (hidden/display) -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">ID</span>
+              <input type="text" id="studentId" readonly placeholder="auto" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm bg-[#111d32] opacity-80" />
+            </div>
+            <!-- Name -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">Name</span>
+              <input type="text" id="studentName" placeholder="" value="John Doe" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+            </div>
+            <!-- Age -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">Age</span>
+              <input type="number" id="studentAge" value="20" min="1" max="99" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+            </div>
+            <!-- Class selection (dynamic) -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">Class</span>
+              <select id="studentClassId" class="input-blueblack rounded-lg px-3 py-2 text-sm w-full">
+                <option value="">— select class —</option>
+              </select>
+            </div>
+            <!-- Marks (0-100) -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">Marks</span>
+              <input type="number" id="studentMarks" value="85" min="0" max="100" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+            </div>
+            <!-- Present (integer count, e.g. days present) -->
+            <div class="flex items-center gap-2">
+              <span class="text-blue-300 text-sm w-16">Present</span>
+              <input type="number" id="studentPresent" value="22" min="0" class="w-full input-blueblack rounded-lg px-3 py-2 text-sm" />
+            </div>
+
+            <!-- CRUD action buttons (add, edit, delete, clear) -->
+            <div class="flex flex-wrap gap-2 pt-3">
+              <button id="addStudentBtn" class="bg-blue-700 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg> add</button>
+              <button id="updateStudentBtn" class="bg-indigo-900/70 hover:bg-indigo-800 text-indigo-100 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> update</button>
+              <button id="deleteStudentBtn" class="bg-rose-950/70 hover:bg-rose-900 text-rose-200 text-sm py-2 px-4 rounded-lg flex items-center gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> delete</button>
+              <button id="clearFormBtn" type="reset" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 text-sm py-2 px-4 rounded-lg">clear</button>
+            </div>
+            <p class="text-xs text-blue-400/60 mt-1 italic">click on a student card to populate form</p>
+          </div>
+        </div>
+
+        <!-- CLASS management (add/delete) -->
+        <div class="bg-[#0f172b] rounded-2xl border border-blue-900/60 p-5 shadow-2xl">
+          <h2 class="text-md font-semibold flex items-center gap-2 text-white mb-3"><span class="w-1.5 h-5 bg-blue-400 rounded-full"></span>📚 Classes (Add / Delete)</h2>
+          <div class="flex items-center gap-2 mb-3">
+            <input type="text" id="newClassName" placeholder="e.g. 10-A" class="input-blueblack w-full rounded-lg px-3 py-2.5 text-sm" />
+            <button id="addClassBtn" class="bg-blue-800/50 hover:bg-blue-700/70 text-blue-200 p-2.5 rounded-lg border border-blue-600/50"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div id="classListContainer" class="flex flex-wrap gap-2 pt-2 text-sm min-h-[60px]">
+            <!-- dynamic class badges go here -->
+          </div>
+        </div>
+      </div> <!-- end left -->
+
+      <!-- RIGHT: student cards (table redesign) with all properties -->
+      <div class="lg:col-span-2">
+        <div class="bg-[#0e1629] rounded-2xl border border-blue-900/70 p-5 shadow-2xl flex flex-col h-full">
+          
+          <!-- FILTERS (by name, class, marks, present range) -->
+          <div class="flex flex-wrap gap-3 items-center mb-6">
+            <input type="text" id="filterName" placeholder="🔍 filter by name" class="filter-input text-sm w-44 md:w-52" />
+            <select id="filterClass" class="filter-select text-sm">
+              <option value="all">all classes</option>
+            </select>
+            <input type="number" id="filterMarksMin" placeholder="min marks" class="filter-input text-sm w-24" />
+            <input type="number" id="filterPresentMin" placeholder="min present" class="filter-input text-sm w-24" />
+            <button id="applyFilterBtn" class="bg-blue-700/70 hover:bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium border border-blue-500/50">filter</button>
+          </div>
+
+          <!-- **** NEW LABEL BAR (student table header) **** -->
+          <div class="label-bar">
+            <span class="label-item">🆔 Id</span>
+            <span class="label-item">👤 Name</span>
+            <span class="label-item">🎂 Age</span>
+            <span class="label-item">📚 Class</span>
+            <span class="label-item">📊 Marks</span>
+            <span class="label-item">📅 Present</span>
+            <span class="label-item label-badge ml-14">⚡ Actions</span>
+          </div>
+
+          <!-- STUDENT CARD LIST (each card shows ID, Name, Age, Class, Marks, Present) -->
+          <div id="studentListContainer" class="space-y-2 max-h-[600px] overflow-y-auto pr-1 thin-scroll">
+            <!-- cards will be injected by JS with all properties -->
+            <div class="text-center text-blue-300/50 py-8 flex justify-center items-center">
+              <div class="h-10">
+                Loading students ...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end right -->
+    </div> <!-- end main grid -->
+
+    <!-- footer reminder: you add JS -->
+    <div class="text-center text-xs text-blue-800/60 mt-6 border-t border-blue-900/30 pt-4">
+      ✅ &copy; 2026 | All rights reserved by Md Nihal Uddin
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+   <!-- <script src="./frontend.js"></script> -->
+</body>
+</html>
