@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"strconv"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/static"
 
-	// "gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
+	// "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -30,13 +31,13 @@ type Class struct {
 }
 
 func main(){
-	// dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := "postgresql://mydatabase_0mo6_user:c36WMGCrVLYxvaPktol6R1ChjZDrWAV3@dpg-d6ovdtfafjfc739enl5g-a.oregon-postgres.render.com/mydatabase_0mo6"
+	dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
+	// dsn := "postgresql://mydatabase_0mo6_user:c36WMGCrVLYxvaPktol6R1ChjZDrWAV3@dpg-d6ovdtfafjfc739enl5g-a.oregon-postgres.render.com/mydatabase_0mo6"
 	// dsn := "postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-	}
+	} 
 	fmt.Println("Database connected!")
 
 	// Migrate the schema
@@ -260,5 +261,11 @@ app.Get("/students",func(c fiber.Ctx)error{
     })
 	})
 	app.Use("/", static.New("./public"))
-	app.Listen(":3000")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	app.Listen(":" + port)
 }

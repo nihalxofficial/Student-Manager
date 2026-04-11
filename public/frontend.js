@@ -17,8 +17,8 @@ const filterMarksMin = document.getElementById("filterMarksMin")
 const filterPresentMin = document.getElementById("filterPresentMin")
 const applyFilterBtn = document.getElementById("applyFilterBtn")
 
-// const api = "http://127.0.0.1:3000"
-const api = "https://student-manager-s0ou.onrender.com"
+const api = "http://127.0.0.1:3000"
+// const api = "https://student-manager-s0ou.onrender.com"
 
 let statTotal = document.getElementById("statTotal")
 let statClasses = document.getElementById("statClasses")
@@ -114,7 +114,7 @@ const deleteClass = async (classId) => {
     
     // Even if status is not ok, try to parse the response
     let students = []
-    try {
+    try { 
         students = await res.json()
         // Ensure students is an array
         if (!Array.isArray(students)) {
@@ -217,7 +217,7 @@ updateStudentBtn.addEventListener("click", async () => {
         })
     })
     const data = await response.json()
-    console.log(data);
+    // console.log(data);
     
     displayStudents()
 
