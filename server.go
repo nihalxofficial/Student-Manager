@@ -268,7 +268,8 @@ app.Get("/students",func(c fiber.Ctx)error{
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000"
+		// port = "3000"
+		port = "8080"
 	}
 
 	app.Listen(":" + port)
