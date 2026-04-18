@@ -32,8 +32,8 @@ type Class struct {
 
 func main(){
 	// dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
-	// dsn := "postgresql://mydatabase_0mo6_user:c36WMGCrVLYxvaPktol6R1ChjZDrWAV3@dpg-d6ovdtfafjfc739enl5g-a.oregon-postgres.render.com/mydatabase_0mo6"
-	dsn := "postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+	// dsn := "postgresql://student_data_bvfv_user:CPPiM3m9ZK5h49ZGi5YSgUayekjKFhYX@dpg-d7hf9clckfvc73eiij7g-a.oregon-postgres.render.com/student_data_bvfv"
+	dsn := "postgresql://neondb_owner:npg_TqOR53vzpJhY@ep-royal-union-ancanbtj-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 	// dsn := os.Getenv("postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 	// if dsn == "" {
 	// 	log.Fatal("DATABASE_URL not set")
@@ -268,7 +268,7 @@ app.Get("/students",func(c fiber.Ctx)error{
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "3000"
 	}
 
 	app.Listen(":" + port)
