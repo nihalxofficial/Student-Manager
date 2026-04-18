@@ -33,7 +33,8 @@ type Class struct {
 func main(){
 	// dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
 	// dsn := "postgresql://student_data_bvfv_user:CPPiM3m9ZK5h49ZGi5YSgUayekjKFhYX@dpg-d7hf9clckfvc73eiij7g-a.oregon-postgres.render.com/student_data_bvfv"
-	dsn := "postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+	dsn := "postgresql://neondb_owner:npg_TqOR53vzpJhY@ep-royal-union-ancanbtj-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+	// dsn := os.Getenv("postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 	// if dsn == "" {
 	// 	log.Fatal("DATABASE_URL not set")
 	// }
