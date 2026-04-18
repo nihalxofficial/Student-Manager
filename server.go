@@ -34,6 +34,10 @@ func main(){
 	// dsn := "root:@tcp(127.0.0.1:3306)/student_db?charset=utf8mb4&parseTime=True&loc=Local"
 	// dsn := "postgresql://mydatabase_0mo6_user:c36WMGCrVLYxvaPktol6R1ChjZDrWAV3@dpg-d6ovdtfafjfc739enl5g-a.oregon-postgres.render.com/mydatabase_0mo6"
 	dsn := "postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+	// dsn := os.Getenv("postgresql://neondb_owner:npg_sX0YgAEw1hOG@ep-young-cloud-ad9s130n-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+	// if dsn == "" {
+	// 	log.Fatal("DATABASE_URL not set")
+	// }
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
